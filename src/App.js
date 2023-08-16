@@ -6,17 +6,19 @@ import QuestionAnswer from "./components/QuestionAnswer";
 import { useState } from "react";
 import Quiz from "./components/Quiz";
 import ScoreScreen from "./components/ScoreScreen";
+import Timer from "./components/micros/Timer";
 
 function App() {
 
   const [quizSubmitted,setQuizSubmitted] = useState(false)
+  const [isActive, setIsActive] = useState(true);
 
   return (
     <div className="App">
 
-      {quizSubmitted ? <ScoreScreen /> : <Quiz setQuizSubmitted={setQuizSubmitted} />}
+      {quizSubmitted ? <ScoreScreen setIsActive={setIsActive} /> : <Quiz setQuizSubmitted={setQuizSubmitted} />}
       
-      
+      <Timer isActive={isActive} setIsActive={isActive} />
     </div>
   );
 }

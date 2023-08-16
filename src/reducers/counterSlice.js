@@ -12,7 +12,7 @@ export const fetchQuestionsFromAPI = createAsyncThunk(
 export const counterSlice = createSlice({
     name: "test",
     initialState: {
-        score: null,
+        score: 0,
         loading: false,
         error: null,
         selectedAnswers: [],
