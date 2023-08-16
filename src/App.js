@@ -11,10 +11,6 @@ function App() {
 
   const [quizSubmitted,setQuizSubmitted] = useState(false)
 
-
-
-
-
   return (
     <div className="App">
 

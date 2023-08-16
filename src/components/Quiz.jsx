@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QuestionAnswer from "./QuestionAnswer";
-import { useSelector } from "react-redux";
-import { getQuestions } from "../reducers/counterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchQuestionsFromAPI, getQuestions } from "../reducers/counterSlice";
 
 export default function Quiz(props) {
   const [currQuestion, setCurrQuestion] = useState(0);
 
   const questionList = useSelector(getQuestions);
+  console.log(questionList);
+  const dispatch = useDispatch();
+
+  // Fetching the questions when the component mounts
+  useEffect(() => {
+    dispatch(fetchQuestionsFromAPI());
+  }, [dispatch]);
+
+
   return (
     <div>
       <h1>

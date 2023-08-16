@@ -6,7 +6,7 @@ import { selectedAnswer,scoreQuiz } from "../reducers/counterSlice";
 export default function QuestionAnswer(props) {
   const [selectedOption, setSelectedOption] = useState(null);
   const dispatch = useDispatch();
-  console.log(props.maxQ, props.currQ);
+
   const onSubmitQuestionAnswer = () => {
     props.nextFn(props.currQ + 1 >= props.maxQ ? props.currQ : props.currQ + 1);
     dispatch(
@@ -15,6 +15,9 @@ export default function QuestionAnswer(props) {
   };
 
   const submitQuiz = () => {
+    dispatch(
+        selectedAnswer({ id: props.data.id, selectedOption: selectedOption })
+      );
     props.setQuizSubmitted(true)
     dispatch(scoreQuiz())
   }
@@ -22,7 +25,7 @@ export default function QuestionAnswer(props) {
   return (
     <div>
       <h4>{props.data.question}</h4>
-      {props.data.options.map((ans) => {
+      {props.data.options ? props.data.options.map((ans) => {
         return (
           <RadioButtons
             selectedOption={selectedOption}
@@ -31,7 +34,7 @@ export default function QuestionAnswer(props) {
             key={ans.id}
           />
         );
-      })}
+      }) : <></>}
       {
         <button
           style={{ background: "blue", color: "white" }}

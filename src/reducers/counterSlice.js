@@ -1,131 +1,63 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from 'axios';
+
+export const fetchQuestionsFromAPI = createAsyncThunk(
+    'test/fetchQuestions',
+    async () => {
+        const response = await axios.get('http://localhost:5000/get-questions');
+        return response.data;
+    }
+);
 
 export const counterSlice = createSlice({
-  name: "test",
-  initialState: {
-    score:null,
-    selectedAnswers: [],
-    questionList: [
-      {
-        id: 1,
-        question: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-          velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-          occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-          mollit anim id est laborum.`,
-        options: [
-          {
-            id: 1,
-            value: "Sed ut perspiciatis unde omnis iste natus error sit",
-          },
-          {
-            id: 2,
-            value: " quaerat voluptatem. Ut enim ad minima",
-          },
-          {
-            id: 3,
-            value:
-              "ure and praising pain was born and I will give you a complete account of the system, and expound",
-          },
-          {
-            id: 4,
-            value:
-              "hich of us ever undertakes laborious physical exercise, except to obtain some a find fault with a man wh",
-          },
-        ],
-        answer: 1,
-      },
-      {
-        id: 2,
-        question: `fugiat nulla pariatur. Excepteur sint
-          occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-          mollit anim id est laborum.`,
-        options: [
-          {
-            id: 1,
-            value: "Sed ut perspiciatis unde omnis iste natus error sit",
-          },
-          {
-            id: 2,
-            value: " quaerat voluptatem. Ut enim ad minima",
-          },
-          {
-            id: 3,
-            value:
-              "ure and praising pain was born and I will give you a complete account of the system, and expound",
-          },
-          {
-            id: 4,
-            value:
-              "hich of us ever undertakes laborious physical exercise, except to obtain some a find fault with a man wh",
-          },
-        ],
-        answer: 4,
-      },
-      {
-        id: 1,
-        question: `Ut enim ad minim
-          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat. `,
-        options: [
-          {
-            id: 1,
-            value: "Sed ut perspiciatis unde omnis iste natus error sit",
-          },
-          {
-            id: 2,
-            value: " quaerat voluptatem. Ut enim ad minima",
-          },
-          {
-            id: 3,
-            value:
-              "ure and praising pain was born and I will give you a complete account of the system, and expound",
-          },
-          {
-            id: 4,
-            value:
-              "hich of us ever undertakes laborious physical exercise, except to obtain some a find fault with a man wh",
-          },
-        ],
-        answer: 3,
-      },
-    ],
-  },
-  reducers: {
-    selectedAnswer: (state, action) => {
-      let filteredSelectedAnswer = state.selectedAnswers.filter(
-        (ans) => ans.id !== action.payload.id
-      );
-
-      state.value = {
-        ...state,
-        selectedAnswers: [...filteredSelectedAnswer, action.payload],
-      };
+    name: "test",
+    initialState: {
+        score: null,
+        loading: false,
+        error: null,
+        selectedAnswers: [],
+        questionList: [],
     },
-    scoreQuiz: (state) => {
-        
-        let studentAnswers = state.selectedAnswers.map(ans => ans)
-        let actualAnswers = state.questionList.map(ans => ans.answer)
-        let score = 0
-        for(let i=0 ; i < studentAnswers.length ; i++){
-            if(studentAnswers[i] === actualAnswers[i]){
-                score.value++
+    reducers: {
+        selectedAnswer: (state, action) => {
+            let filteredSelectedAnswer = state.selectedAnswers.filter(
+                (ans) => ans.id !== action.payload.id
+            );
+            state.selectedAnswers = [...filteredSelectedAnswer, action.payload];
+        },
+        scoreQuiz: (state) => {
+            let studentAnswers = state.selectedAnswers.map(ans => { return ans.selectedOption });
+            let actualAnswers = state.questionList.map(ans => { return ans.answer });
+            console.log(studentAnswers, actualAnswers);
+            for (let i = 0; i < studentAnswers.length; i++) {
+                if (studentAnswers[i] === actualAnswers[i]) {
+                    ++state.score;
+                }
             }
-        }
-
+        },
     },
-  },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchQuestionsFromAPI.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchQuestionsFromAPI.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questionList = action.payload;
+            })
+            .addCase(fetchQuestionsFromAPI.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    }
 });
 
-export const selectCount = (state) => state.counter.value;
 export const getQuestions = (state) => state.counter.questionList;
 export const getScore = (state) => state.counter.score;
-
+export const isLoading = (state) => state.counter.loading;
+export const getError = (state) => state.counter.error;
 
 // Action creators are generated for each case reducer function
-export const { selectedAnswer,scoreQuiz } =
-  counterSlice.actions;
+export const { selectedAnswer, scoreQuiz } = counterSlice.actions;
 
 export default counterSlice.reducer;
