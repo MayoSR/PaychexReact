@@ -1,23 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { useSelector } from "react-redux";
+import { getQuestions, selectCount } from "./reducers/counterSlice";
+import QuestionAnswer from "./components/QuestionAnswer";
+import { useState } from "react";
+import Quiz from "./components/Quiz";
+import ScoreScreen from "./components/ScoreScreen";
 
 function App() {
+
+  const [quizSubmitted,setQuizSubmitted] = useState(false)
+
+
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      {quizSubmitted ? <ScoreScreen /> : <Quiz setQuizSubmitted={setQuizSubmitted} />}
+      
+      
     </div>
   );
 }
